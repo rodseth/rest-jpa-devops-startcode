@@ -1,7 +1,7 @@
 package facades;
 
 import utils.EMF_Creator;
-import entities.RenameMe;
+import entities.Movie;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -16,7 +16,13 @@ import org.junit.jupiter.api.Test;
 public class FacadeExampleTest {
 
     private static EntityManagerFactory emf;
-    private static FacadeExample facade;
+    private static MovieFacade facade;
+    private static String[] actors1 = {"Mari", "Nikolaj", "Frank"};
+    private static String[] actors2 = {"Pelle", "Benjamin", "Matt"};
+    private static String[] actors3 = {"Nikolaj", "Jon", "Lars"};
+    private static Movie movie1 = new Movie(2017, "The (Balka) Beach", actors1);
+    private static Movie movie2 = new Movie(2019, "The Dreamteam", actors2);
+    private static Movie movie3 = new Movie(2020, "To studypoint or not to studypoint", actors3);
 
     public FacadeExampleTest() {
     }
@@ -24,7 +30,7 @@ public class FacadeExampleTest {
     @BeforeAll
     public static void setUpClass() {
        emf = EMF_Creator.createEntityManagerFactoryForTest();
-       facade = FacadeExample.getFacadeExample(emf);
+       facade = MovieFacade.getFacadeExample(emf);
     }
 
     @AfterAll
@@ -39,9 +45,11 @@ public class FacadeExampleTest {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("RenameMe.deleteAllRows").executeUpdate();
-            em.persist(new RenameMe("Some txt", "More text"));
-            em.persist(new RenameMe("aaa", "bbb"));
+            em.createNamedQuery("Movie.deleteAllRows").executeUpdate();
+            em.persist(movie1);
+            em.persist(movie2);
+            em.persist(movie3);
+            
 
             em.getTransaction().commit();
         } finally {
@@ -57,7 +65,7 @@ public class FacadeExampleTest {
     // TODO: Delete or change this method 
     @Test
     public void testAFacadeMethod() {
-        assertEquals(2, facade.getRenameMeCount(), "Expects two rows in the database");
+        assertEquals(3, facade.MovieCount(), "Expects Three rows in the database");
     }
 
 }

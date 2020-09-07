@@ -33,6 +33,6 @@ public class TestResource {
         System.out.println("PW             -->"+System.getenv("PW"));
         System.out.println("CONNECTION_STR -->"+System.getenv("CONNECTION_STR"));
         */
-        return "{\"msg\":\"Hello World\"}";
+        return "{\"msg\":\"Mari productions presents\"}";
     }
 }

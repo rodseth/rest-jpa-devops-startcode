@@ -29,7 +29,7 @@ public class MovieResourceTest {
     private static final String SERVER_URL = "http://localhost/api";
     private static Movie r1,r2;
     private static String[] actors1 = {"Mari", "Nikolaj", "Frank"};
-    private static Movie movie1 = new Movie(2017, "The (Balka) Beach", actors1);
+    private static Movie movie1 = new Movie(2017, "Balka", actors1);
     private static Movie movie2 = new Movie(2019, "The Dreamteam", new String[]{"Pelle", "Benjamin", "Matt"});
     
     
@@ -116,6 +116,16 @@ public class MovieResourceTest {
         .statusCode(HttpStatus.OK_200.getStatusCode())
         .body("size()", is(2))
         .and()
-        .body("title",hasItems("The (Balka) Beach","The Dreamteam"));
+        .body("title",hasItems("Balka","The Dreamteam"));
+    }
+    @Disabled
+    @Test
+    public void testSpecificTitle() throws Exception {
+        given()
+        .contentType("application/json")
+        .get("/movie/title/Balka").then()
+                .assertThat()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("id", equalTo(movie1.getId().longValue()));
     }
 }

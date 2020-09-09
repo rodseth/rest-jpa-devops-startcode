@@ -13,24 +13,22 @@ import org.junit.jupiter.api.Test;
 
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
-public class FacadeExampleTest {
+public class MovieFacadeTest {
 
     private static EntityManagerFactory emf;
     private static MovieFacade facade;
-    private static String[] actors1 = {"Mari", "Nikolaj", "Frank"};
     private static String[] actors2 = {"Pelle", "Benjamin", "Matt"};
-    private static String[] actors3 = {"Nikolaj", "Jon", "Lars"};
-    private static Movie movie1 = new Movie(2017, "The (Balka) Beach", actors1);
+    private static Movie movie1 = new Movie(2017, "The (Balka) Beach", new String[]{"Mari", "Nikolaj", "Frank"});
     private static Movie movie2 = new Movie(2019, "The Dreamteam", actors2);
-    private static Movie movie3 = new Movie(2020, "To studypoint or not to studypoint", actors3);
+    private static Movie movie3 = new Movie(2020, "To studypoint or not to studypoint", new String[]{"Nikolaj", "Jon", "Lars"});
 
-    public FacadeExampleTest() {
+    public MovieFacadeTest() {
     }
 
     @BeforeAll
     public static void setUpClass() {
-       emf = EMF_Creator.createEntityManagerFactoryForTest();
-       facade = MovieFacade.getFacadeExample(emf);
+        emf = EMF_Creator.createEntityManagerFactoryForTest();
+        facade = MovieFacade.getFacadeExample(emf);
     }
 
     @AfterAll
@@ -49,7 +47,6 @@ public class FacadeExampleTest {
             em.persist(movie1);
             em.persist(movie2);
             em.persist(movie3);
-            
 
             em.getTransaction().commit();
         } finally {

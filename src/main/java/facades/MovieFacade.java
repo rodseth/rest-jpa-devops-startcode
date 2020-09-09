@@ -14,13 +14,13 @@ public class MovieFacade {
 
     private static MovieFacade instance;
     private static EntityManagerFactory emf;
-    
+
     //Private Constructor to ensure Singleton
-    private MovieFacade() {}
-    
-    
+    private MovieFacade() {
+    }
+
     /**
-     * 
+     *
      * @param _emf
      * @return an instance of this facade class.
      */
@@ -35,68 +35,102 @@ public class MovieFacade {
     private EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
-    
+
     //TODO Remove/Change this before use
-    public long MovieCount(){
+    public void deleteAllMovies() {
         EntityManager em = emf.createEntityManager();
-        try{
-            long renameMeCount = (long)em.createQuery("SELECT COUNT(m) FROM Movie m").getSingleResult();
-            return renameMeCount;
-        }finally{  
-            em.close();
-        }
-        
-    }
-    public List<Movie> getAllMovies (){
-        
-        EntityManager em = emf.createEntityManager();
-        try{
-            Query tq = em.createQuery("SELECT m FROM Movie m");
-            return tq.getResultList();
-        }finally {
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("Movie.deleteAllRows").executeUpdate();
+            em.getTransaction().commit();
+        } finally {
             em.close();
         }
     }
-    
-    public List<Movie> getMoviesByRelease(int released){
-        
+
+    public long MovieCount() {
         EntityManager em = emf.createEntityManager();
-        try{
+        try {
+            long movieMeCount = (long) em.createQuery("SELECT COUNT(m) FROM Movie m").getSingleResult();
+            return movieMeCount;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Movie getMovieById(long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Query query = em.createNamedQuery("Movie.getById");
+            query.setParameter("id", id);
+            Movie movie = (Movie) query.getSingleResult();
+            return movie;
+        } finally {
+            em.close();
+        }
+
+    }
+
+    public List<Movie> getMovieByTitle(String title) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Query query = em.createNamedQuery("Movie.getByTitle");
+            query.setParameter("title", title);
+            List<Movie> movieList = query.getResultList();
+            return movieList;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Movie> getAllMovies() {
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            Query query = em.createNamedQuery("Movie.getAll");
+            List<Movie> movies = query.getResultList();
+            return movies;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Movie> getMoviesByRelease(int released) {
+
+        EntityManager em = emf.createEntityManager();
+        try {
             Query tq = em.createQuery("SELECT m FROM Movie m WHERE m.released = :id");
             tq.setParameter("id", released);
             return tq.getResultList();
-        }finally{
+        } finally {
             em.close();
         }
     }
-    public Movie getMovieById (Long id){
-        
-        EntityManager em = emf.createEntityManager();
-        Movie movie = em.find(Movie.class, id);
-        return movie;
-    }
 
     void addMovie(int released, String title, String[] actors) {
-        
-        EntityManager em = emf.createEntityManager();
-        Movie movie = new Movie(released,title,actors);
-        try{
-        em.getTransaction().begin();
-        em.persist(movie);
-        em.getTransaction().commit();
-        }finally {
-        em.close();
-    }}
 
-    public Movie getMovieByTitle(String title) {
-        
         EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery("SELECT m FROM Movie m WHERE m.title = :title");
-        q.setParameter("title", title);
-        Movie m = (Movie) q.getSingleResult();
-        return m;
-        
+        Movie movie = new Movie(released, title, actors);
+        try {
+            em.getTransaction().begin();
+            em.persist(movie);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
 
+    public void populateDB() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(new Movie(2020, "Battle of the Studypoints", new String[]{"Nikolaj", "Jon", "Lars"}));
+            em.persist(new Movie(2019, "The Dreamteam", new String[]{"Matt", "Pelle", "Benjamin"}));
+            em.persist(new Movie(2021, "To Studypoint or not to Studypoint", new String[]{"Bornholm", "Lyngby"}));
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
 
 }

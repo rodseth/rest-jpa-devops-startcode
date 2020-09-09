@@ -14,6 +14,8 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +29,8 @@ public class MovieResourceTest {
     private static final String SERVER_URL = "http://localhost/api";
     private static Movie r1,r2;
     private static String[] actors1 = {"Mari", "Nikolaj", "Frank"};
-    private static String[] actors2 = {"Pelle", "Benjamin", "Matt"};
     private static Movie movie1 = new Movie(2017, "The (Balka) Beach", actors1);
-    private static Movie movie2 = new Movie(2019, "The Dreamteam", actors2);
+    private static Movie movie2 = new Movie(2019, "The Dreamteam", new String[]{"Pelle", "Benjamin", "Matt"});
     
     
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
@@ -67,13 +68,12 @@ public class MovieResourceTest {
     @BeforeEach
     public void setUp() {
         EntityManager em = emf.createEntityManager();
-        r1 = new Movie(2017, "The (Balka) Beach", actors1);
-        r2 = new Movie(2019, "The Dreamteam", actors2);
+       
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Movie.deleteAllRows").executeUpdate();
-            em.persist(r1);
-            em.persist(r2); 
+            em.persist(movie1);
+            em.persist(movie2); 
             em.getTransaction().commit();
         } finally { 
             em.close();
@@ -105,5 +105,17 @@ public class MovieResourceTest {
         .assertThat()
         .statusCode(HttpStatus.OK_200.getStatusCode())
         .body("count", equalTo(2));   
+    }
+    
+    @Test
+    public void testGetAllMovies() throws Exception {
+        given()
+        .contentType("application/json")
+        .get("/movie/all").then()
+        .assertThat()
+        .statusCode(HttpStatus.OK_200.getStatusCode())
+        .body("size()", is(2))
+        .and()
+        .body("title",hasItems("The (Balka) Beach","The Dreamteam"));
     }
 }

@@ -118,7 +118,7 @@ public class MovieResourceTest {
         .and()
         .body("title",hasItems("Balka","The Dreamteam"));
     }
-    @Disabled
+    //@Disabled
     @Test
     public void testSpecificTitle() throws Exception {
         given()

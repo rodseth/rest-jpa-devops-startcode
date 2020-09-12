@@ -126,6 +126,6 @@ public class MovieResourceTest {
         .get("/movie/title/Balka").then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("id", equalTo(movie1.getId().longValue()));
+                .body("[0].id", equalTo(movie1.getId().longValue()));
     }
 }
